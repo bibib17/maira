@@ -1340,7 +1340,7 @@
   <canvas id="particle-canvas"></canvas>
 
   <!-- Audio Element with Direct Stream Google Drive Link -->
-  <audio id="bg-audio" loop preload="auto" playsinline webkit-playsinline src="https://drive.usercontent.google.com/download?id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ&export=download&confirm=t"></audio>
+  <audio id="bg-audio" loop preload="none" playsinline webkit-playsinline></audio>
 
   <!-- Top Glassmorphism Navigation Bar (Hidden on Screen 0 Gate) -->
   <header class="glass-navbar nav-hidden" id="main-navbar">
@@ -1780,7 +1780,7 @@
     ];
 
     /* --------------------------------------------------------------------------
-       2. BACKGROUND MUSIC CONTROLLER (NEW DRIVE AUDIO LINK)
+       2. BACKGROUND MUSIC CONTROLLER (BENTUK CINTA & ROBUST ROMANTIC STREAMER)
        -------------------------------------------------------------------------- */
     const bgAudio = document.getElementById('bg-audio');
     const vinyl = document.getElementById('vinyl');
@@ -1788,15 +1788,68 @@
     let isPlaying = false;
     let hasUnlocked = false;
 
-    // High-priority direct streaming URLs for 'Bentuk Cinta' with offline fallback
+    // Resilient streaming links for 'Bentuk Cinta' (Google Drive ID: 1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ)
     const audioUrls = [
-      "https://drive.usercontent.google.com/download?id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ&export=download&confirm=t",
       "https://docs.google.com/uc?export=download&id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ",
-      "bentuk-cinta.mp3",
-      "./bentuk-cinta.mp3",
-      "kesima.mp3"
+      "https://drive.google.com/uc?export=download&id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ",
+      "https://drive.usercontent.google.com/download?id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ&export=download&confirm=t",
+      "https://drive.google.com/uc?id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ"
     ];
     let audioUrlIndex = 0;
+
+    // Built-in Web Audio API Romantic Lofi Melody Generator (Zero 404 Fallback)
+    let audioCtx = null;
+    let synthInterval = null;
+    let isSynthPlaying = false;
+
+    function startRomanticSynth() {
+      if (isSynthPlaying) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        if (!audioCtx) audioCtx = new AudioContext();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        // Romantic acoustic chord progression (F - C - Dm - Bb)
+        const notes = [
+          349.23, 440.00, 523.25, // F major
+          261.63, 329.63, 392.00, // C major
+          293.66, 349.23, 440.00, // D minor
+          233.08, 293.66, 349.23  // Bb major
+        ];
+        let noteIdx = 0;
+
+        isSynthPlaying = true;
+        isPlaying = true;
+        updateMusicUI();
+
+        synthInterval = setInterval(() => {
+          if (!isPlaying || !audioCtx) return;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(notes[noteIdx % notes.length], audioCtx.currentTime);
+          
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          
+          osc.start();
+          osc.stop(audioCtx.currentTime + 1.2);
+          noteIdx++;
+        }, 600);
+      } catch (e) {
+        console.warn("Romantic synth note error:", e);
+      }
+    }
+
+    function stopRomanticSynth() {
+      if (synthInterval) clearInterval(synthInterval);
+      synthInterval = null;
+      isSynthPlaying = false;
+    }
 
     function updateMusicUI() {
       if (isPlaying) {
@@ -1809,23 +1862,30 @@
     }
 
     function playAudio() {
-      if (!bgAudio) return;
       hasUnlocked = true;
-      bgAudio.volume = 1.0;
 
+      if (!bgAudio.src || bgAudio.src === "" || bgAudio.src === window.location.href) {
+        bgAudio.src = audioUrls[audioUrlIndex];
+        bgAudio.load();
+      }
+
+      bgAudio.volume = 1.0;
       const playPromise = bgAudio.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           isPlaying = true;
+          stopRomanticSynth();
           updateMusicUI();
         }).catch(err => {
-          console.warn("Audio play error, switching source:", err);
+          console.warn("Audio stream notice, attempting smooth source fallback:", err);
           tryFallbackAudio();
         });
       }
     }
 
     function tryFallbackAudio() {
+      if (!hasUnlocked) return;
+
       if (audioUrlIndex < audioUrls.length - 1) {
         audioUrlIndex++;
         bgAudio.src = audioUrls[audioUrlIndex];
@@ -1834,32 +1894,42 @@
         if (p !== undefined) {
           p.then(() => {
             isPlaying = true;
+            stopRomanticSynth();
             updateMusicUI();
-          }).catch(e => {
-            console.warn("Fallback source failed:", e);
+          }).catch(() => {
+            tryFallbackAudio();
           });
         }
+      } else {
+        // Activate romantic acoustic synth melody seamlessly
+        startRomanticSynth();
       }
     }
 
     bgAudio.addEventListener('error', () => {
-      tryFallbackAudio();
+      if (hasUnlocked) {
+        tryFallbackAudio();
+      }
     });
 
     bgAudio.addEventListener('playing', () => {
       isPlaying = true;
+      stopRomanticSynth();
       updateMusicUI();
     });
 
     bgAudio.addEventListener('pause', () => {
-      isPlaying = false;
-      updateMusicUI();
+      if (!isSynthPlaying) {
+        isPlaying = false;
+        updateMusicUI();
+      }
     });
 
     function pauseAudio() {
       if (bgAudio) {
         bgAudio.pause();
       }
+      stopRomanticSynth();
       isPlaying = false;
       updateMusicUI();
     }
