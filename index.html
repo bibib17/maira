@@ -1339,8 +1339,8 @@
   <!-- Interactive Particles Canvas -->
   <canvas id="particle-canvas"></canvas>
 
-  <!-- Audio Element with Direct Stream Google Drive Link -->
-  <audio id="bg-audio" loop preload="none" playsinline webkit-playsinline></audio>
+  <!-- Audio Element with Online Google Drive Stream (GitHub Pages Optimized) -->
+  <audio id="bg-audio" loop preload="none" playsinline webkit-playsinline src="https://drive.usercontent.google.com/download?id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ&export=download&confirm=t"></audio>
 
   <!-- Top Glassmorphism Navigation Bar (Hidden on Screen 0 Gate) -->
   <header class="glass-navbar nav-hidden" id="main-navbar">
@@ -1788,12 +1788,14 @@
     let isPlaying = false;
     let hasUnlocked = false;
 
-    // Resilient streaming links for 'Bentuk Cinta' (Google Drive ID: 1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ)
+    // Online direct streaming URLs for 'Bentuk Cinta' (Optimized for GitHub Pages)
     const audioUrls = [
+      "https://drive.usercontent.google.com/download?id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ&export=download&confirm=t",
       "https://docs.google.com/uc?export=download&id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ",
       "https://drive.google.com/uc?export=download&id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ",
-      "https://drive.usercontent.google.com/download?id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ&export=download&confirm=t",
-      "https://drive.google.com/uc?id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ"
+      "https://drive.google.com/uc?id=1TnG_-tp3CsDHKfFlLvXOPtfR26PVWceJ",
+      "./bentuk-cinta.mp3",
+      "bentuk-cinta.mp3"
     ];
     let audioUrlIndex = 0;
 
